@@ -30,7 +30,7 @@ export default {
     }
   },
   // Typically this would hold in store or lib itself
-  isAuthenicated() {
+  isAuthenticated() {
     return authManager?.isAuthenticated()
   }
 };
@@ -60,10 +60,13 @@ function getOIDCSettings(): OIDCAuthSettings {
     }
   }
 }
+// ToDo: if needed. Set Refresh Token interval
 
+/*
 function registerTokenInterceptor() {
   api.interceptors.request.use(async (config) => {
 
+    // Capacitor library
     const status = await Network.getStatus();
     console.log('Network status:', status.connected);
     if (!status.connected) {
@@ -82,8 +85,8 @@ function registerTokenInterceptor() {
     return config;
   });
 }
+*/
 
-// ToDo: if needed. Set Refresh Token interval
 
 /*
 Reason for the function:

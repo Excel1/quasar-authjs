@@ -16,7 +16,7 @@ export default boot(({ router }) => {
   // Set up router guard
   router.beforeEach(async (to, from, next) => {
     if (to.matched.some(record => record.meta?.requiresAuth)) {
-      if (authService.isAuthenticated) {
+      if (authService.isAuthenticated()) {
         next();
       } else {
         next('/');
