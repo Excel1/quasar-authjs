@@ -1,0 +1,30 @@
+diff --git a/node_modules/@badisi/auth-js/esm/oidc/index.js b/node_modules/@badisi/auth-js/esm/oidc/index.js
+index ed82000..3883622 100644
+--- a/node_modules/@badisi/auth-js/esm/oidc/index.js
++++ b/node_modules/@badisi/auth-js/esm/oidc/index.js
+@@ -95,7 +95,8 @@ var AuthUtils = class _AuthUtils {
+   }
+   static {
+     this.getBaseUrl = () => {
+-      const baseUrl = document.baseURI || document.querySelector("base")?.href || location.origin;
++      const baseURIWithoutQueryParams = new URL(document.baseURI).origin;
++      const baseUrl = baseURIWithoutQueryParams || document.querySelector("base")?.href || location.origin;
+       return baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`;
+     };
+   }
+@@ -551,6 +552,7 @@ var OIDCAuthManager = class extends AuthManager {
+       }
+     }, userSettings);
+     this.userManager = new OidcUserManager(this.settings);
++
+     this.userManagerSubs.push(
+       this.userManager.events.addUserLoaded((user) => {
+         this.user = user;
+@@ -568,6 +570,7 @@ var OIDCAuthManager = class extends AuthManager {
+       })
+     );
+     this.assertNotInInceptionLoop();
++
+     if (AuthUtils.isUrlMatching(location.href, this.settings.internal?.redirect_uri)) {
+       await this.runSyncOrAsync(async () => {
+         const redirectUrl = sessionStorage.getItem(REDIRECT_URL_KEY);

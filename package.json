@@ -6,7 +6,7 @@
   "author": "-",
   "private": true,
   "scripts": {
-    "postinstall": "quasar prepare",
+    "postinstall": "quasar prepare && npx patch-package",
     "test": "echo \"No test specified\" && exit 0",
     "dev": "quasar dev",
     "build": "quasar build"
