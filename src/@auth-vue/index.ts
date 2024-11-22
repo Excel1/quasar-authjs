@@ -1,8 +1,15 @@
 import { AuthService } from './auth.service';
+import { type Router } from 'vue-router';
+import { type QVueGlobals } from 'quasar';
 
-declare module 'vue' {
-  export interface ComponentCustomProperties {
+declare module '@vue/runtime-core' {
+  interface ComponentCustomProperties {
+    $refs: {
+      [key: string]: HTMLElement | any;
+    };
     $authService: AuthService;
+    $router: Router;
+    $q: QVueGlobals;
   }
 }
 
