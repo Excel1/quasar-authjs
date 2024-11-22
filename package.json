@@ -22,9 +22,10 @@
   },
   "devDependencies": {
     "@quasar/app-vite": "^2.0.0-rc.3",
-    "@types/node": "^12.20.21",
+    "@types/node": "^22.9.1",
     "autoprefixer": "^10.4.2",
-    "typescript": "^5.4"
+    "typescript": "^5.4",
+    "vite-plugin-static-copy": "^2.1.0"
   },
   "engines": {
     "node": "^18 || ^16 || ^14.19",

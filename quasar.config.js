@@ -9,8 +9,9 @@
 // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js
 
 
-import { configure } from 'quasar/wrappers';
 
+import { configure } from "quasar/wrappers";
+import { viteStaticCopy } from "vite-plugin-static-copy";
 
 module.exports = configure(function (/* ctx */) {
   return {
@@ -23,7 +24,7 @@ module.exports = configure(function (/* ctx */) {
     // --> boot files are part of "main.js"
     // https://v2.quasar.dev/quasar-cli-vite/boot-files
     boot: [
-      'routerGuard',
+      'auth',
       'axios',
     ],
 
@@ -53,7 +54,7 @@ module.exports = configure(function (/* ctx */) {
         node: 'node16'
       },
 
-      vueRouterMode: 'hash', // available values: 'hash', 'history'
+      vueRouterMode: "history", // available values: 'hash', 'history'
       // vueRouterBase,
       // vueDevtools,
       // vueOptionsAPI: false,
@@ -72,14 +73,22 @@ module.exports = configure(function (/* ctx */) {
       // extendViteConf (viteConf) {},
       // viteVuePluginOptions: {},
 
-
-      // vitePlugins: [
-      //   [ 'package-name', { ..options.. } ]
-      // ]
+      vitePlugins: [
+        //   [ 'package-name', { ..options.. } ]
+        ...viteStaticCopy({
+          targets: [
+            {
+              src: "node_modules/@badisi/auth-js/oidc/assets/*",
+              dest: "oidc/callback/"
+            }
+          ]
+        })
+      ]
     },
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#devServer
     devServer: {
+      port: 4200, // use 4200 as we are using auth0 provider for authentication and only http://localhost:4200 is allowed for redirects
       // https: true
       open: true // opens browser window automatically
     },
