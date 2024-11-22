@@ -1,5 +1,5 @@
 import { boot } from 'quasar/wrappers';
-import { initAuth } from 'src/@auth-vue';
+import { initAuth } from '@badisi/auth-vue';
 
 export default boot(async ({ app, router }) => {
   const AuthPlugin = await initAuth({

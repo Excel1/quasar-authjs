@@ -12,6 +12,7 @@
 
 import { configure } from "quasar/wrappers";
 import { viteStaticCopy } from "vite-plugin-static-copy";
+import path from 'path';
 
 module.exports = configure(function (/* ctx */) {
   return {
@@ -72,6 +73,10 @@ module.exports = configure(function (/* ctx */) {
 
       // extendViteConf (viteConf) {},
       // viteVuePluginOptions: {},
+
+      alias: {
+        '@badisi/auth-vue': path.resolve(__dirname, './src/@auth-vue')
+      },
 
       vitePlugins: [
         //   [ 'package-name', { ..options.. } ]

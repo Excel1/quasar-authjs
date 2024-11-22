@@ -1,3 +1,4 @@
 dist/
 node_modules/
 .quasar
+quasar.config.js.temporary.compiled*

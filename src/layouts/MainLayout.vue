@@ -13,7 +13,7 @@
 
         <q-toolbar-title>
           Quasar App
-          (Authenticated: {{ $authService.isAuthenticatedRef }})
+          (Authenticated: {{ $authService.isRenewingRef.value ? 'renewing..' : $authService.isAuthenticatedRef }})
         </q-toolbar-title>
 
         <div>Quasar v{{ $q.version }}</div>
@@ -48,7 +48,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import EssentialLink, { type EssentialLinkProps } from 'components/EssentialLink.vue';
+import EssentialLink, { type EssentialLinkProps } from '../components/EssentialLink.vue';
 
 const essentialLinks: EssentialLinkProps[] = [
   {
