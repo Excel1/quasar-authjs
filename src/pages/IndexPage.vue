@@ -1,5 +1,5 @@
 <template>
-  <q-page class="row items-center justify-evenly">
+  <q-page class="column items-center justify-center">
     <q-btn outline color="primary" label="Login" @click="$authService.login()" />
     <q-btn outline color="primary" label="Logout" @click="$authService.logout()" />
     <q-btn outline color="primary" label="Go to secure site" @click="router.push('secure')" />

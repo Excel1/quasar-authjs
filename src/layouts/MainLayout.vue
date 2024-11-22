@@ -13,6 +13,7 @@
 
         <q-toolbar-title>
           Quasar App
+          (Authenticated: {{ $authService.isAuthenticatedRef }})
         </q-toolbar-title>
 
         <div>Quasar v{{ $q.version }}</div>
