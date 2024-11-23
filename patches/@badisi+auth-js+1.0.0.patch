@@ -1,8 +1,82 @@
+diff --git a/node_modules/@badisi/auth-js/core/index.d.ts b/node_modules/@badisi/auth-js/core/index.d.ts
+index 299238a..c48982a 100644
+--- a/node_modules/@badisi/auth-js/core/index.d.ts
++++ b/node_modules/@badisi/auth-js/core/index.d.ts
+@@ -7,7 +7,7 @@
+  */
+ export type Optional<T, K extends keyof T> = Pick<Partial<T>, K> & Omit<T, K>;
+ export type { AuthSettings } from './models/auth-settings.model';
+-export type { AuthSubscriber } from './models/auth-subscriber.model';
++export type { AuthSubscriber, AuthSubscriberOptions } from './models/auth-subscriber.model';
+ export type { AuthSubscription } from './models/auth-subscription.model';
+ export { AuthManager } from './auth-manager';
+ export { AuthSubscriptions } from './auth-subscriptions';
+diff --git a/node_modules/@badisi/auth-js/core/models/auth-subscriber.model.d.ts b/node_modules/@badisi/auth-js/core/models/auth-subscriber.model.d.ts
+index 8b4b98a..22cf5f7 100644
+--- a/node_modules/@badisi/auth-js/core/models/auth-subscriber.model.d.ts
++++ b/node_modules/@badisi/auth-js/core/models/auth-subscriber.model.d.ts
+@@ -3,3 +3,7 @@
+  */
+ export type AuthSubscriber<T extends unknown[]> = (...args: T) => (Promise<void> | void);
+ //# sourceMappingURL=auth-subscriber.model.d.ts.map
++
++export interface AuthSubscriberOptions {
++    once: boolean;
++}
 diff --git a/node_modules/@badisi/auth-js/esm/oidc/index.js b/node_modules/@badisi/auth-js/esm/oidc/index.js
-index ed82000..3883622 100644
+index ed82000..8316c7d 100644
 --- a/node_modules/@badisi/auth-js/esm/oidc/index.js
 +++ b/node_modules/@badisi/auth-js/esm/oidc/index.js
-@@ -95,7 +95,8 @@ var AuthUtils = class _AuthUtils {
+@@ -8,29 +8,38 @@ var AuthManager = class {
+ // core/auth-subscriptions.ts
+ var AuthSubscriptions = class {
+   constructor() {
+-    this.subscribers = [];
++    this.subscriptions = [];
+   }
+-  add(subscriber) {
+-    this.subscribers.push(subscriber);
++  add(subscriber, options) {
++    const subscription = { subscriber: subscriber, options: options };
++    this.subscriptions.push(subscription);
+     if (this.lastNotifiedValue) {
+       void subscriber(...this.lastNotifiedValue);
++      if (options?.once) {
++        this.unsubscribe(subscription);
++      }
+     }
+     return {
+-      unsubscribe: () => this.unsubscribe(subscriber)
++      unsubscribe: () => this.unsubscribe(subscription)
+     };
+   }
+   notify(...args) {
+     this.lastNotifiedValue = args;
+-    this.subscribers.forEach((subscriber) => void subscriber(...args));
++    this.subscriptions.forEach((subscription) => {
++        void subscription.subscriber(...args);
++        if (subscription.options?.once) {
++            this.unsubscribe(subscription);
++        }
++    });
+   }
+-  unsubscribe(subscriber) {
+-    if (subscriber) {
+-      const index = this.subscribers.indexOf(subscriber);
++  unsubscribe(subscription) {
++    if (subscription) {
++      const index = this.subscriptions.indexOf(subscription);
+       if (index !== -1) {
+-        this.subscribers.splice(index, 1);
++        this.subscriptions.splice(index, 1);
+       }
+     } else {
+-      this.subscribers = [];
++      this.subscriptions = [];
+     }
+   }
+ };
+@@ -95,7 +104,8 @@ var AuthUtils = class _AuthUtils {
    }
    static {
      this.getBaseUrl = () => {
@@ -12,7 +86,7 @@ index ed82000..3883622 100644
        return baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`;
      };
    }
-@@ -551,6 +552,7 @@ var OIDCAuthManager = class extends AuthManager {
+@@ -551,6 +561,7 @@ var OIDCAuthManager = class extends AuthManager {
        }
      }, userSettings);
      this.userManager = new OidcUserManager(this.settings);
@@ -20,7 +94,7 @@ index ed82000..3883622 100644
      this.userManagerSubs.push(
        this.userManager.events.addUserLoaded((user) => {
          this.user = user;
-@@ -568,6 +570,7 @@ var OIDCAuthManager = class extends AuthManager {
+@@ -568,6 +579,7 @@ var OIDCAuthManager = class extends AuthManager {
        })
      );
      this.assertNotInInceptionLoop();
@@ -28,3 +102,76 @@ index ed82000..3883622 100644
      if (AuthUtils.isUrlMatching(location.href, this.settings.internal?.redirect_uri)) {
        await this.runSyncOrAsync(async () => {
          const redirectUrl = sessionStorage.getItem(REDIRECT_URL_KEY);
+@@ -695,26 +707,26 @@ var OIDCAuthManager = class extends AuthManager {
+     this.userManagerSubs.forEach((unsub) => unsub());
+   }
+   // --- HANDLER(s) ---
+-  onIdTokenChanged(handler) {
+-    return this.idTokenSubs.add(handler);
++  onIdTokenChanged(handler, options) {
++    return this.idTokenSubs.add(handler, options);
+   }
+-  onAccessTokenChanged(handler) {
+-    return this.accessTokenSubs.add(handler);
++  onAccessTokenChanged(handler, options) {
++    return this.accessTokenSubs.add(handler, options);
+   }
+-  onUserProfileChanged(handler) {
+-    return this.userProfileSubs.add(handler);
++  onUserProfileChanged(handler, options) {
++    return this.userProfileSubs.add(handler, options);
+   }
+-  onUserSessionChanged(handler) {
+-    return this.userSessionSubs.add(handler);
++  onUserSessionChanged(handler, options) {
++    return this.userSessionSubs.add(handler, options);
+   }
+-  onAuthenticatedChanged(handler) {
+-    return this.authenticatedSubs.add(handler);
++  onAuthenticatedChanged(handler, options) {
++    return this.authenticatedSubs.add(handler, options);
+   }
+-  onRenewingChanged(handler) {
+-    return this.renewingSubs.add(handler);
++  onRenewingChanged(handler, options) {
++    return this.renewingSubs.add(handler, options);
+   }
+-  onRedirect(handler) {
+-    return this.redirectSubs.add(handler);
++  onRedirect(handler, options) {
++    return this.redirectSubs.add(handler, options);
+   }
+   // --- HELPER(s) ---
+   /**
+diff --git a/node_modules/@badisi/auth-js/oidc/oidc-auth-manager.d.ts b/node_modules/@badisi/auth-js/oidc/oidc-auth-manager.d.ts
+index 1819799..49dbe8d 100644
+--- a/node_modules/@badisi/auth-js/oidc/oidc-auth-manager.d.ts
++++ b/node_modules/@badisi/auth-js/oidc/oidc-auth-manager.d.ts
+@@ -1,5 +1,5 @@
+ import { UserProfile } from 'oidc-client-ts';
+-import { AuthManager, AuthSubscriber, AuthSubscription } from '../core';
++import { AuthManager, AuthSubscriber, AuthSubscriberOptions, AuthSubscription } from '../core';
+ import { AccessToken } from './models/access-token.model';
+ import { LoginArgs, LogoutArgs, RenewArgs } from './models/args.model';
+ import { IdToken } from './models/id-token.model';
+@@ -38,13 +38,13 @@ export declare class OIDCAuthManager extends AuthManager<OIDCAuthSettings> {
+     getAccessToken(): Promise<string | undefined>;
+     getAccessTokenDecoded(): Promise<AccessToken | string | undefined>;
+     destroy(): void;
+-    onIdTokenChanged(handler: AuthSubscriber<[string | undefined]>): AuthSubscription;
+-    onAccessTokenChanged(handler: AuthSubscriber<[string | undefined]>): AuthSubscription;
+-    onUserProfileChanged(handler: AuthSubscriber<[UserProfile | undefined]>): AuthSubscription;
+-    onUserSessionChanged(handler: AuthSubscriber<[UserSession | undefined]>): AuthSubscription;
+-    onAuthenticatedChanged(handler: AuthSubscriber<[boolean]>): AuthSubscription;
+-    onRenewingChanged(handler: AuthSubscriber<[boolean]>): AuthSubscription;
+-    onRedirect(handler: AuthSubscriber<[URL]>): AuthSubscription;
++    onIdTokenChanged(handler: AuthSubscriber<[string | undefined]>, options?: AuthSubscriberOptions): AuthSubscription;
++    onAccessTokenChanged(handler: AuthSubscriber<[string | undefined]>, options?: AuthSubscriberOptions): AuthSubscription;
++    onUserProfileChanged(handler: AuthSubscriber<[UserProfile | undefined]>, options?: AuthSubscriberOptions): AuthSubscription;
++    onUserSessionChanged(handler: AuthSubscriber<[UserSession | undefined]>, options?: AuthSubscriberOptions): AuthSubscription;
++    onAuthenticatedChanged(handler: AuthSubscriber<[boolean]>, options?: AuthSubscriberOptions): AuthSubscription;
++    onRenewingChanged(handler: AuthSubscriber<[boolean]>, options?: AuthSubscriberOptions): AuthSubscription;
++    onRedirect(handler: AuthSubscriber<[URL]>, options?: AuthSubscriberOptions): AuthSubscription;
+     /**
+      * Makes sure that the execution code is not trapped in an infinite loop.
+      *
