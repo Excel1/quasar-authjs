@@ -76,25 +76,25 @@ export class AuthService extends OIDCAuthService<AuthSettings> {
 
     #listenForManagerChanges(): void {
         this.#authManagerSubs.push(
-            this.getManager().onIdTokenChanged((value) => {
+            this.manager.onIdTokenChanged((value) => {
                 this.idTokenRef.value = value;
             }),
-            this.getManager().onAccessTokenChanged((value) => {
+            this.manager.onAccessTokenChanged((value) => {
                 this.accessTokenRef.value = value;
             }),
-            this.getManager().onUserProfileChanged((value) => {
+            this.manager.onUserProfileChanged((value) => {
                 this.userProfileRef.value = value;
             }),
-            this.getManager().onUserSessionChanged((value) => {
+            this.manager.onUserSessionChanged((value) => {
                 this.userSessionRef.value = value;
             }),
-            this.getManager().onAuthenticatedChanged((value) => {
+            this.manager.onAuthenticatedChanged((value) => {
                 this.isAuthenticatedRef.value = value;
             }),
-            this.getManager().onRenewingChanged((value) => {
+            this.manager.onRenewingChanged((value) => {
                 this.isRenewingRef.value = value;
             }),
-            this.getManager().onRedirect((value) => {
+            this.manager.onRedirect((value) => {
                 /**
                  * Make sure to navigate to a relative path from the base url.
                  * => we need to substract the base url from the received url.

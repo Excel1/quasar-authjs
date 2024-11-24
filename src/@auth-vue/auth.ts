@@ -38,10 +38,10 @@ export const initAuth = async (settings: AuthSettings): Promise<Plugin> => {
             // Add global router guard
             router.beforeEach(async (to, _from, next) => {
                 if (to.meta.authGuard) {
-                    next(await useAuthGuard({
-                        redirectUrl: to.fullPath,
-                        ...(typeof to.meta.authGuard === 'object' ? to.meta.authGuard : {})
-                    }) as unknown);
+                    next(await useAuthGuard(
+                        to.fullPath,
+                        typeof to.meta.authGuard === 'object' ? to.meta.authGuard : undefined
+                    ) as unknown);
                 } else {
                     next();
                 }

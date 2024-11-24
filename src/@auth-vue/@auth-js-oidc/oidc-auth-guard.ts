@@ -9,7 +9,7 @@ export class OIDCAuthGuard {
         this.#manager = manager;
     }
 
-    public async validate(options?: AuthGuardOptions): Promise<boolean | string> {
+    public async validate(toUrl: string, options?: AuthGuardOptions): Promise<boolean | string> {
         // TODO: add 'authGuardFallbackUrl' to auth-js type
         const notAllowedUrl = options?.fallbackUrl ?? this.#manager.getSettings()?.['authGuardFallbackUrl'];
 
@@ -18,7 +18,7 @@ export class OIDCAuthGuard {
             const isAllowed = await this.#isAllowed(options?.validator);
             return !isAllowed && notAllowedUrl ? notAllowedUrl : isAllowed;
         } else {
-            return notAllowedUrl ?? (await this.#manager.login({ redirectUrl: options.redirectUrl ?? location.href }));
+            return notAllowedUrl ?? (await this.#manager.login({ redirectUrl: toUrl }));
         }
     }
 
