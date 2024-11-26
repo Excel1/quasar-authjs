@@ -25,7 +25,10 @@ export type {
     SignoutMobileArgs,
 } from '@badisi/auth-js/oidc';
 
+// TODO: should be moved to @badisi/auth-js/oidc
 export type {
+    InjectToken,
+    InjectTokenPattern,
     AuthGuardOptions,
     AuthGuardValidator
 } from './@auth-js-oidc';
@@ -36,12 +39,6 @@ export {
     UserSession,
     DesktopNavigation
 } from '@badisi/auth-js/oidc';
-
-export type {
-    AuthSettings,
-    InjectToken,
-    InjectTokenPattern
-} from './auth.models';
 
 export { useAuthService, AuthService } from './auth.service';
 export { useAuthGuard } from './auth.guard';
