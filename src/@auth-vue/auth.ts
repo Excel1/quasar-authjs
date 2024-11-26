@@ -6,7 +6,9 @@ import type { App, Plugin } from 'vue';
 import { AuthService } from './auth.service';
 import { useAuthGuard } from './auth.guard';
 
-export const initAuth = async (settings: OIDCAuthSettings): Promise<Plugin> => {
+export interface AuthSettings extends OIDCAuthSettings { };
+
+export const initAuth = async (settings: AuthSettings): Promise<Plugin> => {
     /**
      *  Vue do not wait for a plugin to be installed if the installation is async.
      *  So we have to get the authManager prior of the plugin installation phase, to

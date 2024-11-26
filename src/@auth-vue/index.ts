@@ -42,4 +42,4 @@ export {
 
 export { useAuthService, AuthService } from './auth.service';
 export { useAuthGuard } from './auth.guard';
-export { initAuth } from './auth';
+export { initAuth, type AuthSettings } from './auth';
