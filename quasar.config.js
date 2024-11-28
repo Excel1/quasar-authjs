@@ -8,13 +8,11 @@
 // Configuration for your app
 // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js
 
+const { configure } = require("quasar/wrappers");
+const path = require("path");
 
-
-import { configure } from "quasar/wrappers";
-import { viteStaticCopy } from "vite-plugin-static-copy";
-import path from 'path';
-
-module.exports = configure(function (/* ctx */) {
+module.exports = configure(async function (/* ctx */) {
+  const { viteStaticCopy } = await import("vite-plugin-static-copy");
   return {
 
 
@@ -75,7 +73,13 @@ module.exports = configure(function (/* ctx */) {
       // viteVuePluginOptions: {},
 
       alias: {
-        '@badisi/auth-vue': path.resolve(__dirname, './src/@auth-vue')
+        "@badisi/auth-vue": path.resolve(__dirname, "./src/@auth-vue"),
+        "@badisi/auth-js": path.resolve(__dirname, "./node_modules/@badisi/auth-js/esm"),
+        "oidc-client-ts": path.resolve(__dirname, "./node_modules/oidc-client-ts/dist/esm/oidc-client-ts.js"),
+        "crypto-js/core.js": path.resolve(__dirname, "./patches/crypto-js-core.shim.js"),
+        "crypto-js/enc-base64.js": path.resolve(__dirname, "./patches/crypto-js-enc-base64.shim.js"),
+        "crypto-js/enc-utf8.js": path.resolve(__dirname, "./patches/crypto-js-enc-utf8.shim.js"),
+        "crypto-js/sha256.js": path.resolve(__dirname, "./patches/crypto-js-sha256.shim.js"),
       },
 
       vitePlugins: [
